@@ -53,7 +53,134 @@ public class Main extends Application {
         for(int rows = 0; rows < 8; rows++){         // For each index of the list, set it as '*'
             for(int cols = 0; cols < 8; cols++){
                 mainBoard[rows][cols] = "*"; } } }
+       
+    
+    //Algorithm used for computer to decide a move on easy mode//
+    
+    public static void computerEasyTurn(){                // This is the algorithm that makes a move if difficulty is easy
+        int numLegal = 0;
+        ArrayList<Integer> xPos = new ArrayList<>();      // List to keep track of the X coordinate of each legal move
+        ArrayList<Integer> yPos = new ArrayList<>();      // List for corresponding Y coordinates
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                if(isValid(i, j, "W") && mainBoard[i][j] == "*"){    // for each tile, if it is a valid move:
+                    numLegal++;                                             // number of legal moves increases
+                    xPos.add(i);                                            // add the x coordinate i to the X list
+                    yPos.add(j); } } }                                      // add the y coordinate j to the Y list
 
+        if(numLegal != 0){
+            int index = (int)(Math.random()*(numLegal-1) + 1);     // picks a random move from the list of legal ones
+            if(numLegal == 1){ index = 0; }                        // if there is only 1 legal move, index value can only be 0
+            displayBox("", "Nice Move!");
+            makeMove(xPos.get(index), yPos.get(index), "W"); }   // calls the makeMove method with the chosen coordinates
+        try{ Thread.sleep(800); }                                // waits 800ms before displaying so the user has time to see the board first
+        catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
+        turnNum++;      // increase var turnNum to show it is user's turn again
+        displayGUI();   // display updates board and scoreboard
+
+        int oppCount = 0; // oppCount is the number of legal moves for user
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                if(isValid(i, j, "B")){
+                    oppCount ++; } }           // counts how many legal moves user has
+        }if(oppCount == 0){
+            turnNum++;
+            computerEasyTurn();  // If none, computers turn again
+            } }
+    
+    
+    
+    
+    //Algorithm used for computer to decide on a move in hard mode//
+
+    public static void computerHardTurn(){
+        int numLegal = 0;
+
+        ArrayList<String> placehold = new ArrayList<>();   // placehold is a memory board for when the algorithm runs tests
+        ArrayList<Integer> xPos = new ArrayList<>();       // represents x coordinates of all legal moves
+        ArrayList<Integer> yPos = new ArrayList<>();       // y of all legal moves
+        ArrayList<Integer> numFlip = new ArrayList<>();    // number of tiles flipped for all legal moves
+        ArrayList<Integer> xPos1 = new ArrayList<>();      // x coordinates of all legal moves which do not allow opponent to place tile in corner on next move
+        ArrayList<Integer> yPos1 = new ArrayList<>();      // y of all legal moves which do not allow corner
+        ArrayList<Integer> numFlip1 = new ArrayList<>();   // number of tiles flipped for all that do not allow corner
+
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                placehold.add(mainBoard[i][j]); } }      // duplicates mainBoard at the beginning of the turn
+
+
+        if(isValid(0, 0, "W") && mainBoard[0][0] == "*"){     // if top left corner is legal, take it
+            makeMove(0, 0, "W");
+            displayBox("", "NICE MOVE!");
+
+        }else if(isValid(0, 7, "W") && mainBoard[0][7] == "*"){  // if top right corner is legal, take it
+            makeMove(0, 7, "W");
+            displayBox("", "NICE MOVE!");
+
+        }else if(isValid(7, 0, "W") && mainBoard[7][0] == "*"){  // if bottom left corner is legal, take it
+            makeMove(7, 0, "W");
+            displayBox("", "NICE MOVE!");
+
+        }else if(isValid(7, 7, "W") && mainBoard[7][7] == "*"){  // if bottom right corner is legal, take it
+            makeMove(7, 7, "W");
+            displayBox("", "NICE MOVE!");
+
+        }else{
+            for(int i = 0; i < 8; i++){
+                for(int j = 0; j < 8; j++){
+                    if(isValid(i, j, "W") && mainBoard[i][j] == "*"){    // for each tile, if legal, add to xPos, yPos and numFlip
+                        numLegal++;    // keeps track of number of legal moves
+                        xPos.add(i);
+                        yPos.add(j);
+                        numFlip.add(numTilesFlipped(i, j, "W")); } } }
+            if(numLegal != 0){     // If there are legal moves, proceed
+                for(int i = 0; i < numLegal; i++){
+                    makeMove(xPos.get(i), yPos.get(i), "W");  // simulates each legal move the computer could make
+                    if(!(isValid(0, 0, "B") && mainBoard[0][0] == "*") &&        // if black cannot take any corners after simlated move,
+                            !(isValid(0, 7, "B") && mainBoard[0][7] == "*")      // add to xPos1, yPos1, numFlip1
+                            && !(isValid(7, 0, "B") && mainBoard[7][0] == "*")
+                            && !(isValid(7, 7, "B") && mainBoard[7][7] == "*")){
+                        xPos1.add(xPos.get(i));
+                        yPos1.add(yPos.get(i));
+                        numFlip1.add(numFlip.get(i));
+                    }
+
+
+                    for(int j = 0; j < 8; j++){
+                        for(int k = 0; k < 8; k++){
+                            mainBoard[j][k] = placehold.get(8 * j + k); } } }    // reset mainBoard to the placehold for next simulation
+
+                if(xPos1.size() != 0){               // if there are moves which do not allow opponent to take corner
+                    for(int i = 19; i > 0; i--){     // loop which counts down from 19 (19 is the most tiles that can be flipped on an Othello board)
+                        if(numFlip1.contains(i)){    // for each number counting down, stop when numFlip1 contains it; this finds the move which flips the most tiles
+                            displayBox("", "NICE MOVE!");
+                            makeMove(xPos1.get(numFlip1.indexOf(i)), yPos1.get(numFlip1.indexOf(i)), "W");   // makes move based on xPos1 and yPos1 coordinates of the move with most flipped
+                            break; } }
+                }else{     // if there are no moves which do not allow opponent to take corners
+                    for(int i = 19; i > 0; i--){   // find the move which flips the most based on the original xPos, yPos list
+                        if(numFlip.contains(i)){
+                            displayBox("", "NICE MOVE!");
+                            makeMove(xPos.get(numFlip.indexOf(i)), yPos.get(numFlip.indexOf(i)), "W");
+                            break; } } } }
+            try { Thread.sleep(800); }    // wait 800ms so the user can see the board before the move
+            catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
+        }
+        turnNum++;  // next turn
+        displayGUI(); // displayGUI method to update board
+
+        int oppCount = 0;   // oppCount is number of legal moves for user
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                if(isValid(i, j, "B")){
+                    oppCount ++; } }    // keeps track of number of legal moves
+        }if(oppCount == 0){
+            turnNum++;
+            computerHardTurn();   // if none, computer turn again
+             }}
+
+    
+   // DisplayBox Used to display an alert box to the screen. Takes in parameter 'message' and returns it to user//
+    
     public static void displayBox(String title, String message){    // Displaying a message as an alert box
         Stage boxWindow = new Stage();
         boxWindow.initModality(Modality.APPLICATION_MODAL);
@@ -93,7 +220,10 @@ public class Main extends Application {
         boxWindow.setScene(scene);
         boxWindow.showAndWait(); }
 
-    public static boolean quitBox(){                        // Method to confirm that user(s) want to quit game
+    
+    //quitBox method called when user wants to quit. Special alert box //
+    
+    public static boolean quitBox(){                    
         Stage boxWindow = new Stage();
         boxWindow.initModality(Modality.APPLICATION_MODAL);
         boxWindow.setTitle("");
@@ -119,10 +249,19 @@ public class Main extends Application {
         return result; }                                   // returns the result boolean
 
 
+    
+    //setTile method used to overwrite game board and change a colour. Also used to initialize starting tiles //
+
+    
     public static void setTile(int row, int col, String player){
         mainBoard[row][col] = player;
-    }  // method to set any tile, used to initiate 4 starting tiles
+    }  
 
+      
+    
+    //This method uses primary tile search algorithm to iterate through tiles, verifying if arequested move is legal//
+    //It performs the same task in each of the 8 directions, if any direction returns true, function is true        // 
+    
     public static boolean isValid(int initRow, int initCol, String player){   // This method verifies if a move is legal, given coordinates and player
 
 //LEFT
@@ -296,7 +435,11 @@ public class Main extends Application {
         return mainReturn; }      // if any direction was true, mainReturn will be true, otherwise false
 
 
-    public static int numTilesFlipped(int initRow, int initCol, String player) {    // This method determines how many tiles would be flipped by a move, takes in coordinates and player
+    
+    
+    //Using same base algorithm --> determines how many tiles would be flipped for a given move. Used by computer bot//
+    
+    public static int numTilesFlipped(int initRow, int initCol, String player) {   
         boolean loopBreak = false;   // Very similar to the isValid method, returns total number of tiles flipped instead of if it is legal or not
         int count = 0;
         int col = initCol;
@@ -463,8 +606,12 @@ public class Main extends Application {
         if (loopBreak) { total += count; }
         return total; }   // return the total tiles flipped in all directions
 
+    
+    
+    
+    //Also uses base algorithm. This method is used to flip appropriate tiles when user or computer makes a move//
 
-    public static void makeMove(int initRow, int initCol, String player){    // method to move tiles, also very similar to isValid and numTilesFlipped
+    public static void makeMove(int initRow, int initCol, String player){   
         boolean loopBreak = false;     // but does not return anything, changes the tile values on the mainBoard
         int count = 0;
         int col = initCol;
@@ -649,11 +796,12 @@ public class Main extends Application {
             for(int i = 0; i <= count; i++){ mainBoard[initRow + i][initCol + i] = player; } } }
 
 
+    //After each move, this function redisplays the updated board//
 
     public static void displayGUI(){       // this method updates the GUI game board
-        blackCount = 0;                    // keeps track of how many blank chips have been placed
-        whiteCount = 0;                    // keeps track of how many white chips have been placed
-        blankCount = 0;                    // keeps track of how many black chips have been placed
+        blackCount = 0;                    // keeps track of how many blank tiles are on the board
+        whiteCount = 0;                    // keeps track of how many white chips are on the board
+        blankCount = 0;                    // keeps track of how many black chips are on the board
 
         for(int i = 0; i < 8; i ++){       // for each index of the first row of buttons:
             if(mainBoard[0][i] == "B"){    // condition is if the tile at specified index is black
@@ -773,7 +921,9 @@ public class Main extends Application {
         setTile(4, 3, "W"); }
 
 
-    public static void gameOver(){    // After each move, this method checks is the game is over
+    //After any move is made, this function verifies that the game is not over//
+    
+    public static void gameOver(){    
         int black = 0;
         int white = 0;
 
@@ -820,217 +970,6 @@ public class Main extends Application {
         }
         gameOver(); }             // After each move, checks if the game is over
 
-    public static void computerEasyTurn(){                // This is the algorithm that makes a move if difficulty is easy
-        int numLegal = 0;
-        ArrayList<Integer> xPos = new ArrayList<>();      // List to keep track of the X coordinate of each legal move
-        ArrayList<Integer> yPos = new ArrayList<>();      // List for corresponding Y coordinates
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                if(isValid(i, j, "W") && mainBoard[i][j] == "*"){    // for each tile, if it is a valid move:
-                    numLegal++;                                             // number of legal moves increases
-                    xPos.add(i);                                            // add the x coordinate i to the X list
-                    yPos.add(j); } } }                                      // add the y coordinate j to the Y list
-
-        if(numLegal != 0){
-            int index = (int)(Math.random()*(numLegal-1) + 1);     // picks a random move from the list of legal ones
-            if(numLegal == 1){ index = 0; }                        // if there is only 1 legal move, index value can only be 0
-            displayBox("", "Nice Move!");
-            makeMove(xPos.get(index), yPos.get(index), "W"); }   // calls the makeMove method with the chosen coordinates
-        try{ Thread.sleep(800); }                                // waits 800ms before displaying so the user has time to see the board first
-        catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
-        turnNum++;      // increase var turnNum to show it is user's turn again
-        displayGUI();   // display updates board and scoreboard
-
-        int oppCount = 0; // oppCount is the number of legal moves for user
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                if(isValid(i, j, "B")){
-                    oppCount ++; } }           // counts how many legal moves user has
-        }if(oppCount == 0){
-            turnNum++;
-            computerEasyTurn();  // If none, computers turn again
-            } }
-
-/*    public static void computerHardTurn(){
-        int numLegal = 0;
-        ArrayList<Integer> shuffle = new ArrayList<>();
-        ArrayList<String> placehold = new ArrayList<>();
-        ArrayList<Integer> xPos = new ArrayList<>();
-        ArrayList<Integer> yPos = new ArrayList<>();
-        ArrayList<Integer> numFlip = new ArrayList<>();
-        ArrayList<Integer> xPos1 = new ArrayList<>();
-        ArrayList<Integer> yPos1 = new ArrayList<>();
-        ArrayList<Integer> numFlip1 = new ArrayList<>();
-
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                placehold.add(mainBoard[i][j]); } }
-
-
-        if(isValid(0, 0, "W") && mainBoard[0][0] == "*"){
-            makeMove(0, 0, "W");
-            displayBox("", "NICE MOVE!");
-            try { Thread.sleep(800); }
-            catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
-
-        }else if(isValid(0, 7, "W") && mainBoard[0][7] == "*"){
-            makeMove(0, 7, "W");
-            displayBox("", "NICE MOVE!");
-            try { Thread.sleep(800); }
-            catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
-
-        }else if(isValid(7, 0, "W") && mainBoard[7][0] == "*"){
-            makeMove(7, 0, "W");
-            displayBox("", "NICE MOVE!");
-            try { Thread.sleep(800); }
-            catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
-
-        }else if(isValid(7, 7, "W") && mainBoard[7][7] == "*"){
-            makeMove(7, 7, "W");
-            displayBox("", "NICE MOVE!");
-            try { Thread.sleep(800); }
-            catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
-
-        }else{
-            for(int i = 0; i < 8; i++){
-                for(int j = 0; j < 8; j++){
-                    if(isValid(i, j, "W") && mainBoard[i][j] == "*"){
-                        numLegal++;
-                        xPos.add(i);
-                        yPos.add(j);
-                        numFlip.add(numTilesFlipped(i, j, "W")); } } }
-            if(numLegal != 0){
-
-                for(int i = 0; i < numLegal; i++){
-                    makeMove(xPos.get(i), yPos.get(i), "W");
-                    if(!(isValid(0, 0, "B") && mainBoard[0][0] == "*") && !(isValid(0, 7, "B") && mainBoard[0][7] == "*")
-                            && !(isValid(7, 0, "B") && mainBoard[7][0] == "*") && !(isValid(7, 7, "B") && mainBoard[7][7] == "*")){
-                        xPos1.add(xPos.get(i));
-                        yPos1.add(yPos.get(i));
-                        numFlip1.add(numFlip.get(i));
-                        shuffle.add(i);
-                        System.out.println("a");}
-
-                    for(int j = 0; j < 8; j++){
-                        for(int k = 0; k < 8; k++){
-                            mainBoard[j][k] = placehold.get(8 * j + k); } } }
-                System.out.println("b");
-                if(xPos1.size() == 1){
-                    displayBox("", "NICE MOVE!");
-                    makeMove(xPos1.get(0), yPos1.get(0), "W");
-                }
-                else if(xPos1.size() != 0){
-                    System.out.println("c");
-                    Collections.shuffle(shuffle);
-                    xPos.clear();
-                    yPos.clear();
-                    numFlip.clear();
-                    numFlip1.clone();
-                    for(int i = 0; i < shuffle.size(); i++){
-                        xPos.add(i, xPos1.get(shuffle.get(i)));
-                        yPos.add(i, yPos1.get(shuffle.get(i)));
-                        numFlip.add(i, numFlip1.get(shuffle.get(i)));
-                    }
-                }
-                System.out.println("e");
-
-                for(int i = 19; i > 0; i--){
-                    if(numFlip.contains(i)){
-                        displayBox("", "NICE MOVE!");
-                        makeMove(xPos.get(numFlip.indexOf(i)), yPos.get(numFlip.indexOf(i)), "W");
-                        break; } } } }
-            try { Thread.sleep(800); }
-            catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
-            turnNum++;
-            displayGUI();
-            }*/
-
-
-    public static void computerHardTurn(){
-        int numLegal = 0;
-
-        ArrayList<String> placehold = new ArrayList<>();   // placehold is a memory board for when the algorithm runs tests
-        ArrayList<Integer> xPos = new ArrayList<>();       // represents x coordinates of all legal moves
-        ArrayList<Integer> yPos = new ArrayList<>();       // y of all legal moves
-        ArrayList<Integer> numFlip = new ArrayList<>();    // number of tiles flipped for all legal moves
-        ArrayList<Integer> xPos1 = new ArrayList<>();      // x coordinates of all legal moves which do not allow opponent to place tile in corner on next move
-        ArrayList<Integer> yPos1 = new ArrayList<>();      // y of all legal moves which do not allow corner
-        ArrayList<Integer> numFlip1 = new ArrayList<>();   // number of tiles flipped for all that do not allow corner
-
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                placehold.add(mainBoard[i][j]); } }      // duplicates mainBoard at the beginning of the turn
-
-
-        if(isValid(0, 0, "W") && mainBoard[0][0] == "*"){     // if top left corner is legal, take it
-            makeMove(0, 0, "W");
-            displayBox("", "NICE MOVE!");
-
-        }else if(isValid(0, 7, "W") && mainBoard[0][7] == "*"){  // if top right corner is legal, take it
-            makeMove(0, 7, "W");
-            displayBox("", "NICE MOVE!");
-
-        }else if(isValid(7, 0, "W") && mainBoard[7][0] == "*"){  // if bottom left corner is legal, take it
-            makeMove(7, 0, "W");
-            displayBox("", "NICE MOVE!");
-
-        }else if(isValid(7, 7, "W") && mainBoard[7][7] == "*"){  // if bottom right corner is legal, take it
-            makeMove(7, 7, "W");
-            displayBox("", "NICE MOVE!");
-
-        }else{
-            for(int i = 0; i < 8; i++){
-                for(int j = 0; j < 8; j++){
-                    if(isValid(i, j, "W") && mainBoard[i][j] == "*"){    // for each tile, if legal, add to xPos, yPos and numFlip
-                        numLegal++;    // keeps track of number of legal moves
-                        xPos.add(i);
-                        yPos.add(j);
-                        numFlip.add(numTilesFlipped(i, j, "W")); } } }
-            if(numLegal != 0){     // If there are legal moves, proceed
-                for(int i = 0; i < numLegal; i++){
-                    makeMove(xPos.get(i), yPos.get(i), "W");  // simulates each legal move the computer could make
-                    if(!(isValid(0, 0, "B") && mainBoard[0][0] == "*") &&        // if black cannot take any corners after simlated move,
-                            !(isValid(0, 7, "B") && mainBoard[0][7] == "*")      // add to xPos1, yPos1, numFlip1
-                            && !(isValid(7, 0, "B") && mainBoard[7][0] == "*")
-                            && !(isValid(7, 7, "B") && mainBoard[7][7] == "*")){
-                        xPos1.add(xPos.get(i));
-                        yPos1.add(yPos.get(i));
-                        numFlip1.add(numFlip.get(i));
-                    }
-
-
-                    for(int j = 0; j < 8; j++){
-                        for(int k = 0; k < 8; k++){
-                            mainBoard[j][k] = placehold.get(8 * j + k); } } }    // reset mainBoard to the placehold for next simulation
-
-                if(xPos1.size() != 0){               // if there are moves which do not allow opponent to take corner
-                    for(int i = 19; i > 0; i--){     // loop which counts down from 19 (19 is the most tiles that can be flipped on an Othello board)
-                        if(numFlip1.contains(i)){    // for each number counting down, stop when numFlip1 contains it; this finds the move which flips the most tiles
-                            displayBox("", "NICE MOVE!");
-                            makeMove(xPos1.get(numFlip1.indexOf(i)), yPos1.get(numFlip1.indexOf(i)), "W");   // makes move based on xPos1 and yPos1 coordinates of the move with most flipped
-                            break; } }
-                }else{     // if there are no moves which do not allow opponent to take corners
-                    for(int i = 19; i > 0; i--){   // find the moe which flips the most based on the original xPos, yPos list
-                        if(numFlip.contains(i)){
-                            displayBox("", "NICE MOVE!");
-                            makeMove(xPos.get(numFlip.indexOf(i)), yPos.get(numFlip.indexOf(i)), "W");
-                            break; } } } }
-            try { Thread.sleep(800); }    // wait 800ms so the user can see the board before the move
-            catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
-        }
-        turnNum++;  // next turn
-        displayGUI(); // displayGUI method to update board
-
-        int oppCount = 0;   // oppCount is number of legal moves for user
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                if(isValid(i, j, "B")){
-                    oppCount ++; } }    // keeps track of number of legal moves
-        }if(oppCount == 0){
-            turnNum++;
-            computerHardTurn();   // if none, computer turn again
-             }}
-
 
     public static void playGame(){             // create base board
         turnNum = 0;                           // set turnNum to 0
@@ -1041,9 +980,6 @@ public class Main extends Application {
 
         displayGUI();  // display board
     }
-
-
-
 
     public static void main(String[] args) {
         launch(args);
