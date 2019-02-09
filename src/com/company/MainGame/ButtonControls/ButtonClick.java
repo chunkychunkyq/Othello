@@ -8,7 +8,6 @@ import com.company.MainGame.GamePlay.Computations.ComputerMakeMove;
 import com.company.MainGame.GamePlay.UpdateDisplay;
 import com.company.MainGame.Graphics.MessageBoxes.DisplayMessage;
 
-
 public class ButtonClick {
 
     public static void ButtonClick(int buttonId){

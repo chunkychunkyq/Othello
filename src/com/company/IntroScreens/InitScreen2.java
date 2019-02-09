@@ -44,8 +44,8 @@ public class InitScreen2 {
         vMain.getChildren().addAll(vbox1, vbox);
         vMain.setAlignment(Pos.BOTTOM_CENTER);
 
-        StackPane stack2 = new StackPane(im, vMain);
-        Scene scene = new Scene(stack2, 700, 700);
+        StackPane stack = new StackPane(im, vMain);
+        Scene scene = new Scene(stack, 700, 700);
 
         twoP.setOnAction(e -> {
             Main.computerDifficulty = 0;

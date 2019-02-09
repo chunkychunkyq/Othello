@@ -172,9 +172,9 @@ public class IsMoveValid {
         row = initRow;
 
         while(!loopBreak){
-            if(col != 7 && row != 0){   // while col is not 7 and row is not 0 (still on board moving up and right)
-                col ++;                 // add 1 to col (move 1 space right)
-                row --;                 // subtract 1 from row (move 1 space up)
+            if(col != 7 && row != 0){
+                col ++;
+                row --;
                 if(Main.mainBoard[row][col] == colour){ loopBreak = true; }
                 else{ count++; }
             }else{

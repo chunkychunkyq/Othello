@@ -28,33 +28,29 @@ public class InitScreen4 {
     public static ImageView im1, im2;
 
     public static Scene initScreen4(){
-        Image image = new Image("/Images/board.gif");   // The board is an image created in paint
+        Image image = new Image("/Images/board.gif");
         ImageView iv1 = new ImageView(image);
-        iv1.setFitHeight(555);                      // Initializing the size of the board to 560x560
+        iv1.setFitHeight(555);
         iv1.setPreserveRatio(true);
 
         for(int i = 1; i <= 64; i++){
             buttonList.add(CreateButton.createButton(i));
         }
 
-        VBox introv = new VBox();                            // The bottom layer of the game scene is the board, layout
+        VBox introv = new VBox();
         introv.getChildren().addAll(iv1);
         introv.setAlignment(Pos.TOP_CENTER);
         introv.setPadding(new Insets(5));
 
-        Image blackTurn = new Image("/Images/blackTurn.png");    // The next layer is the scoreboard display
-        Image whiteTurn = new Image("/Images/whiteTurn.png");    // There is a separate image representing whose turn it is
+        Image blackTurn = new Image("/Images/blackTurn.png");
+        Image whiteTurn = new Image("/Images/whiteTurn.png");
 
-        im1 = new ImageView(blackTurn);   // bt is the image if it is black's turn
+        im1 = new ImageView(blackTurn);
         im1.setFitHeight(120);
         im1.setPreserveRatio(true);
-        im2 = new ImageView(whiteTurn);   // wt is the image if it is white's turn
+        im2 = new ImageView(whiteTurn);
         im2.setFitHeight(120);
         im2.setPreserveRatio(true);
-
-        System.out.println(Main.blackCount);
-
-
 
         blackScore = new Label(Integer.toString(Main.blackCount));
         blackScore.setFont(Font.font("ALGERIAN", FontWeight.BOLD, 40));
@@ -65,7 +61,6 @@ public class InitScreen4 {
         scoreBoard = new HBox(5);
         scoreBoard.getChildren().addAll(blackScore, im1, whiteScore);
         scoreBoard.setAlignment(Pos.BOTTOM_CENTER);
-        //scoreBoard.setPadding(new Insets(5));
 
         HBox h1 = new HBox(9);
         for(int i = 0; i < 8; i++){
@@ -126,7 +121,6 @@ public class InitScreen4 {
             DisplayMessage.quitMessage();
             if(DisplayMessage.result){
                 Main.setScene(InitScreen1.initScene1());
-                //reset();
             }
         });
 
@@ -138,11 +132,11 @@ public class InitScreen4 {
         VBox button = new VBox(0);
         button.getChildren().addAll(v1, quitlayout);
 
-        StackPane stack4 = new StackPane();
-        stack4.getChildren().addAll(scoreBoard, introv, button);
-        stack4.setAlignment(Pos.CENTER);
+        StackPane stack = new StackPane();
+        stack.getChildren().addAll(scoreBoard, introv, button);
+        stack.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(stack4, 700,700);
+        Scene scene = new Scene(stack, 700,700);
 
         return scene;
     }

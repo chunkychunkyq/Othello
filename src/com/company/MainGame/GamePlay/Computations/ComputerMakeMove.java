@@ -53,39 +53,41 @@ public class ComputerMakeMove {
     public static void makeMoveHard(){
         int numLegal = 0;
 
-        ArrayList<Character> placehold = new ArrayList<>();   // placehold is a memory board for when the algorithm runs tests
-        ArrayList<Integer> xPos = new ArrayList<>();       // represents x coordinates of all legal moves
-        ArrayList<Integer> yPos = new ArrayList<>();       // y of all legal moves
-        ArrayList<Integer> numFlip = new ArrayList<>();    // number of tiles flipped for all legal moves
-        ArrayList<Integer> xPos1 = new ArrayList<>();      // x coordinates of all legal moves which do not allow opponent to place tile in corner on next move
-        ArrayList<Integer> yPos1 = new ArrayList<>();      // y of all legal moves which do not allow corner
-        ArrayList<Integer> numFlip1 = new ArrayList<>();   // number of tiles flipped for all that do not allow corner
+        ArrayList<Character> placehold = new ArrayList<>();
+        ArrayList<Integer> xPos = new ArrayList<>();
+        ArrayList<Integer> yPos = new ArrayList<>();
+        ArrayList<Integer> numFlip = new ArrayList<>();
+        ArrayList<Integer> xPos1 = new ArrayList<>();
+        ArrayList<Integer> yPos1 = new ArrayList<>();
+        ArrayList<Integer> numFlip1 = new ArrayList<>();
 
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
-                placehold.add(Main.mainBoard[i][j]); } }      // duplicates mainBoard at the beginning of the turn
+                placehold.add(Main.mainBoard[i][j]);
+            }
+        }
 
 
-        if(IsMoveValid.isMoveValid(0, 0, 'W') && Main.mainBoard[0][0] == '*'){     // if top left corner is legal, take it
+        if(IsMoveValid.isMoveValid(0, 0, 'W') && Main.mainBoard[0][0] == '*'){
             MakeMove.makeMove(0, 0, 'W');
             DisplayMessage.displayMessage("", "NICE MOVE!");
 
-        }else if(IsMoveValid.isMoveValid(0, 7, 'W') && Main.mainBoard[0][7] == '*'){  // if top right corner is legal, take it
+        }else if(IsMoveValid.isMoveValid(0, 7, 'W') && Main.mainBoard[0][7] == '*'){
             MakeMove.makeMove(0, 7, 'W');
             DisplayMessage.displayMessage("", "NICE MOVE!");
 
-        }else if(IsMoveValid.isMoveValid(7, 0, 'W') && Main.mainBoard[7][0] == '*'){  // if bottom left corner is legal, take it
+        }else if(IsMoveValid.isMoveValid(7, 0, 'W') && Main.mainBoard[7][0] == '*'){
             MakeMove.makeMove(7, 0, 'W');
             DisplayMessage.displayMessage("", "NICE MOVE!");
 
-        }else if(IsMoveValid.isMoveValid(7, 7, 'W') && Main.mainBoard[7][7] == '*'){  // if bottom right corner is legal, take it
+        }else if(IsMoveValid.isMoveValid(7, 7, 'W') && Main.mainBoard[7][7] == '*'){
             MakeMove.makeMove(7, 7, 'W');
             DisplayMessage.displayMessage("", "NICE MOVE!");
 
         }else{
             for(int i = 0; i < 8; i++){
                 for(int j = 0; j < 8; j++){
-                    if(IsMoveValid.isMoveValid(i, j, 'W') && Main.mainBoard[i][j] == '*'){    // for each tile, if legal, add to xPos, yPos and numFlip
+                    if(IsMoveValid.isMoveValid(i, j, 'W') && Main.mainBoard[i][j] == '*'){
                         numLegal++;    // keeps track of number of legal moves
                         xPos.add(i);
                         yPos.add(j);
@@ -95,7 +97,7 @@ public class ComputerMakeMove {
             }
             if(numLegal != 0){
                 for(int i = 0; i < numLegal; i++){
-                    MakeMove.makeMove(xPos.get(i), yPos.get(i), 'W');      // Don't allow opponent to take corner
+                    MakeMove.makeMove(xPos.get(i), yPos.get(i), 'W');
                     if(!(IsMoveValid.isMoveValid(0, 0, 'B') && Main.mainBoard[0][0] == '*') &&
                             !(IsMoveValid.isMoveValid(0, 7, 'B') && Main.mainBoard[0][7] == '*')
                             && !(IsMoveValid.isMoveValid(7, 0, 'B') && Main.mainBoard[7][0] == '*')
@@ -121,8 +123,8 @@ public class ComputerMakeMove {
                             break;
                         }
                     }
-                }else{     // if there are no moves which do not allow opponent to take corners
-                    for(int i = 19; i > 0; i--){   // find the moe which flips the most based on the original xPos, yPos list
+                }else{
+                    for(int i = 19; i > 0; i--){
                         if(numFlip.contains(i)){
                             DisplayMessage.displayMessage("", "NICE MOVE!");
                             MakeMove.makeMove(xPos.get(numFlip.indexOf(i)), yPos.get(numFlip.indexOf(i)), 'W');

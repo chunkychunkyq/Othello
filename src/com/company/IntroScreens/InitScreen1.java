@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 public class InitScreen1 {
 
     public static Scene initScene1(){
-        Image image = new Image("/Images/intro.jpg");  // the intro screen background is an image created in paint.net
+        Image image = new Image("/Images/intro.jpg");
         ImageView im = new ImageView(image);
         im.setFitHeight(700);
         im.setPreserveRatio(true);

@@ -24,10 +24,10 @@ public class QuitMessage {
         Button reject = new Button("Cancel");
 
         affirm.setOnAction(e -> {
-            result = true;                                 // yes sets the result boolean to true
+            result = true;
             boxWindow.close(); });
         reject.setOnAction(e -> {
-            result = false;                                // cancel sets the result boolean to false
+            result = false;
             boxWindow.close(); });
 
         VBox layout = new VBox(20);

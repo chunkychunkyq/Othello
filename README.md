@@ -3,7 +3,7 @@ An interactive game of Othello with multiple game modes and using GUIs. All clas
 
 TODO:
 
-- Refactor numTilesFlipped, isMoveValid, numLegalMoves into one
+- Refactor numTilesFlipped, isMoveValid, makeMove into one
 - Button hover - show legal moves
 - Button animations
 - Improve AI (Expert level?)
