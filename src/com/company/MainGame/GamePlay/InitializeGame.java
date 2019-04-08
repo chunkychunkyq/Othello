@@ -1,6 +1,5 @@
 package com.company.MainGame.GamePlay;
 import com.company.Main;
-import com.company.MainGame.Graphics.GetTileIcon;
 
 public class InitializeGame {
 

@@ -12,6 +12,17 @@ public class UpdateDisplay {
         Main.blackCount = 0;
         Main.whiteCount = 0;
 
+
+// UNCOMMENT TO PRINT CONSOLE REPRESENTATION OF BOARD EACH MOVE
+//        for(int i = 0; i < 8; i++){
+//            for(int j = 0; j < 8; j++){
+//                System.out.print(Main.mainBoard[i][j] + " ");
+//            }
+//            System.out.println();
+//        }
+//        System.out.println();
+
+
         for(int i = 0; i < 64; i++){
             if(Main.mainBoard[Math.floorDiv(i, 8)][i % 8] == 'B'){
                 InitScreen4.buttonList.get(i).setGraphic(GetTileIcon.getTileIcon('B'));
